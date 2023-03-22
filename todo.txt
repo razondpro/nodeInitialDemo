@@ -6,7 +6,7 @@ hora inici tasca i final
 usuari -> tasca
 
 
--------crear tasca
+-------crear tasca 
 -------update tasca
 -------esborrar tasca
 -------llistar totes

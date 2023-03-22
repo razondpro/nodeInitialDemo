@@ -9,6 +9,21 @@ class TaskController {
     async create(task) {
         //TODO
     }
+
+    async showAll(){
+
+    }
+
+    async update(){
+
+    }
+
+    async delete(){
+        
+    }
+
+
+
 }
 
 module.exports = TaskController
