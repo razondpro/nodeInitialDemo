@@ -1,5 +1,5 @@
 # 🧑🏻‍💻 DEVELOPERS TEAM 🧑🏻‍💻
-_Project carried out as Sprint 3.3 work of the node.js course at IT Academy in Barcelona by [Razon](https://github.com/razondpro), [Laura](https://github.com/) and [Pau](https://github.com/)._
+_Project carried out as Sprint 3.3 work of the node.js course at IT Academy in Barcelona by [Razon](https://github.com/razondpro), [Laura](https://github.com/LauraGutierrezSa) and [Pau](https://github.com/PaudelaGC)._
 
 ## Starting 🚀
 
