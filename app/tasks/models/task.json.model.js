@@ -67,7 +67,7 @@ class JsonModel {
      * @param {Task} task 
      */
     async update(task){
-        const index = await this.getIndex(this.id)
+        const index = await this.getIndex(task.id)
         if(index)
             await this.saveInPosition(task, index)
 
