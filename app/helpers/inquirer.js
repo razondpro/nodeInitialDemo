@@ -3,10 +3,12 @@ const TaskController = require('../tasks/controller')
 const TaskRepositoryFactory = require('../tasks/repositories/task.repository.factory')
 const Task = require('../tasks/task')
 
+
 const {
     dbSelection,
     askName,
     mainMenu,
+    showMenu,
     askTitle,
     askDetails,
     confirmAction
@@ -38,11 +40,10 @@ async function listMainMenu(dbType) {
         const secondAnswer = await inquirer.prompt([mainMenu]);
         switch (secondAnswer.menu) {
             case 'Create a new task':
-                await createNewTask(tc, user)
+                await createNewTask(tc, user);
                 break;
             case 'Show tasks':
-                const t = await tc.retrieveAll()
-                console.log(t);
+                await listShowMenu();
                 break;
             case 'Delete tasks':
                 console.log('Delete tasks');
@@ -50,6 +51,30 @@ async function listMainMenu(dbType) {
             case 'Exit':
                 exit = true;
                 break
+            default:
+                console.log('What did you selected?');
+        }
+    }
+}
+
+async function listShowMenu() {
+    let exit = false;
+    while (!exit) {
+        const secondAnswer = await inquirer.prompt([showMenu]);
+        switch (secondAnswer.menu) {
+            case 'Pending':
+                //To-do
+                break;
+            case 'Started':
+                //To-do
+                break;
+            case 'Finished':
+                //To-do
+                break;
+            case 'Back':
+                exit = true;
+                console.log("Back to the menu (which was already up)");
+                break;
             default:
                 console.log('What did you selected?');
         }
