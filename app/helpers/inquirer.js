@@ -8,7 +8,7 @@ const {
     dbSelection,
     askName,
     mainMenu,
-    showMenu,
+    taskMenu,
     askTitle,
     askDetails,
     confirmAction
@@ -37,13 +37,13 @@ async function listMainMenu(dbType) {
 
     let exit = false;
     while (!exit) {
-        const secondAnswer = await inquirer.prompt([mainMenu]);
-        switch (secondAnswer.menu) {
+        const menuOption = await inquirer.prompt([mainMenu]);
+        switch (menuOption.menu) {
             case 'Create a new task':
                 await createNewTask(tc, user);
                 break;
             case 'Show tasks':
-                await listShowMenu();
+                await listTaskMenu();
                 break;
             case 'Delete tasks':
                 console.log('Delete tasks');
@@ -52,16 +52,16 @@ async function listMainMenu(dbType) {
                 exit = true;
                 break
             default:
-                console.log('What did you selected?');
+                console.log('What did you select?');
         }
     }
 }
 
-async function listShowMenu() {
+async function listTaskMenu() {
     let exit = false;
     while (!exit) {
-        const secondAnswer = await inquirer.prompt([showMenu]);
-        switch (secondAnswer.menu) {
+        const menuOption = await inquirer.prompt([taskMenu]);
+        switch (menuOption.menu) {
             case 'Pending':
                 //To-do
                 break;
@@ -73,10 +73,9 @@ async function listShowMenu() {
                 break;
             case 'Back':
                 exit = true;
-                console.log("Back to the menu (which was already up)");
                 break;
             default:
-                console.log('What did you selected?');
+                console.log('What did you select?');
         }
     }
 }
