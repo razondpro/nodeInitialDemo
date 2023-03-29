@@ -9,6 +9,18 @@ class TaskList {
     append(task){
         this.tasks.push(task)
     }
+
+    getPendingTasks(){
+        return this.tasks.filter(task => task.status === 'pending');
+    }
+
+    getStartedTasks(){
+        return this.tasks.filter(task => task.status === 'started');
+    }
+
+    getCompletedTasks(){
+        return this.tasks.filter(task => task.status === 'finished');
+    }
 }
 
 module.exports = TaskList

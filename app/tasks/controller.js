@@ -33,6 +33,11 @@ class TaskController {
 
     }
 
+    async getPendingTasks(){
+        const tasks = await this.service.retrtieveAll();
+        console.log(tasks.getPendingTasks());
+    }
+
 
 
 }

@@ -43,7 +43,7 @@ async function listMainMenu(dbType) {
                 await createNewTask(tc, user);
                 break;
             case 'Show tasks':
-                await listTaskMenu();
+                await listTaskMenu(tc);
                 break;
             case 'Delete tasks':
                 console.log('Delete tasks');
@@ -57,13 +57,13 @@ async function listMainMenu(dbType) {
     }
 }
 
-async function listTaskMenu() {
+async function listTaskMenu(tc) {
     let exit = false;
     while (!exit) {
         const menuOption = await inquirer.prompt([taskMenu]);
         switch (menuOption.menu) {
             case 'Pending':
-                //To-do
+                await showPendingTasks(tc);
                 break;
             case 'Started':
                 //To-do
@@ -91,6 +91,13 @@ async function createNewTask(taskController, user) {
     }else {
         console.log('Cancelled task creation')
     }
+}
+
+async function showPendingTasks(taskController) {
+    const tasks = await taskController.getPendingTasks();
+    tasks.forEach(task => {
+        console.log(task)
+    })
 }
 
 

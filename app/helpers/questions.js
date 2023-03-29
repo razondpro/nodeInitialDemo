@@ -33,6 +33,16 @@ const taskMenu = {
     loop: true
 }
 
+const pendingTasks = {
+    type: 'list',
+    name: 'menu',
+    message: `(Pending tasks)
+    Select the task you want to view`,
+    choices: [
+    ],
+    loop: true
+}
+
 const askTitle = {
     type: 'input',
     name: 'title',
@@ -56,6 +66,7 @@ module.exports = {
     askName,
     mainMenu,
     taskMenu,
+    pendingTasks,
     askTitle,
     askDetails,
     confirmAction
