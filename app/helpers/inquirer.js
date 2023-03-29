@@ -11,7 +11,8 @@ const {
     taskMenu,
     askTitle,
     askDetails,
-    confirmAction
+    confirmAction,
+    pendingTasks
 } = require('./questions')
 
 /**
@@ -94,10 +95,18 @@ async function createNewTask(taskController, user) {
 }
 
 async function showPendingTasks(taskController) {
+    let exit = false;
     const tasks = await taskController.getPendingTasks();
-    tasks.forEach(task => {
-        console.log(task)
+    let taskArray = [];
+    taskArray = tasks.tasks;
+    taskArray.forEach(task => {
+        pendingTasks.choices.push(task.title);
     })
+    pendingTasks.choices.push('back');
+    while (!exit) {
+        const menuOption = await inquirer.prompt([pendingTasks]);
+        //To-do
+    }
 }
 
 

@@ -21,7 +21,7 @@ class TaskController {
     }
 
     async retrieveAll() {
-        const t = await this.service.retrtieveAll()
+        const t = await this.service.retrieveAll()
         return t;
     }
 
@@ -34,8 +34,8 @@ class TaskController {
     }
 
     async getPendingTasks(){
-        const tasks = await this.service.retrtieveAll();
-        console.log(tasks.getPendingTasks());
+        const tasks = await this.service.retrieveAll();
+        return tasks;
     }
 
 
