@@ -20,7 +20,7 @@ class TaskList {
 
     getCompletedTasks(){
         return this.tasks.filter(task => task.status === 'finished');
-    }
+    } 
 }
 
 module.exports = TaskList
