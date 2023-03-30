@@ -44,7 +44,7 @@ async function listMainMenu(dbType) {
                 await createNewTask(tc, user);
                 break;
             case 'Show tasks':
-                await listTaskMenu(tc);
+                await listTaskMenu(tc, user);
                 break;
             case 'Delete tasks':
                 console.log('Delete tasks');
@@ -58,13 +58,13 @@ async function listMainMenu(dbType) {
     }
 }
 
-async function listTaskMenu(tc) {
+async function listTaskMenu(tc, user) {
     let exit = false;
     while (!exit) {
         const menuOption = await inquirer.prompt([taskMenu]);
         switch (menuOption.menu) {
             case 'Pending':
-                await showPendingTasks(tc);
+                await showPendingTasks(tc, user);
                 break;
             case 'Started':
                 //To-do
@@ -94,15 +94,19 @@ async function createNewTask(taskController, user) {
     }
 }
 
-async function showPendingTasks(taskController) {
+async function showPendingTasks(taskController, user) {
     let counter = 0;
     let exit = false;
     const tasksArray = await taskController.getPendingTasks();
+    const tasksByUser = [];
     pendingTasks.choices = [];
         tasksArray.forEach(task => {
+            if(task.createdBy === user.name) {
+            tasksByUser.push(task);
             counter++;
             let choiceTitle = `${counter}. ${task.title}`
             pendingTasks.choices.push(choiceTitle);
+            }
         })
     
     pendingTasks.choices.push('Back');
@@ -111,7 +115,7 @@ async function showPendingTasks(taskController) {
         if(menuOption.menu === 'Back') {
             exit = true;
         }else {
-        console.log(tasksArray[(menuOption.menu.charAt(0) - 1)]);
+        console.log(tasksByUser[(menuOption.menu.charAt(0) - 1)]);
         }
     }
 }
