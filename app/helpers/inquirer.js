@@ -18,7 +18,7 @@ const {
 /**
  * Initialization of main program
  */
-async function initProgram(){
+async function initProgram() {
 
     const db = await inquirer.prompt([dbSelection])
     const dbType = db.dbType.toLowerCase();
@@ -86,26 +86,33 @@ async function createNewTask(taskController, user) {
     const taskDetails = await inquirer.prompt([askDetails])
     const ca = await inquirer.prompt([confirmAction])
 
-    if(ca.confirm){
+    if (ca.confirm) {
         await taskController.create(new Task(null, taskTitle.title, taskDetails.details, 'pending', new Date().toISOString(), null, null, user.name))
         console.log('Task created')
-    }else {
+    } else {
         console.log('Cancelled task creation')
     }
 }
 
 async function showPendingTasks(taskController) {
+    let counter = 0;
     let exit = false;
-    const tasks = await taskController.getPendingTasks();
-    let taskArray = [];
-    taskArray = tasks.tasks;
-    taskArray.forEach(task => {
-        pendingTasks.choices.push(task.title);
-    })
-    pendingTasks.choices.push('back');
+    const tasksArray = await taskController.getPendingTasks();
+    pendingTasks.choices = [];
+        tasksArray.forEach(task => {
+            counter++;
+            let choiceTitle = `${counter}. ${task.title}`
+            pendingTasks.choices.push(choiceTitle);
+        })
+    
+    pendingTasks.choices.push('Back');
     while (!exit) {
         const menuOption = await inquirer.prompt([pendingTasks]);
-        //To-do
+        if(menuOption.menu === 'Back') {
+            exit = true;
+        }else {
+        console.log(tasksArray[(menuOption.menu.charAt(0) - 1)]);
+        }
     }
 }
 
