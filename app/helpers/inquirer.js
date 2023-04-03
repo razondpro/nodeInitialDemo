@@ -93,5 +93,39 @@ async function createNewTask(taskController, user) {
     }
 }
 
+//show all started tasks:
+async function showStartedTasks(taskController, user) {
+    let counter = 0;
+    let exit = false;
+    const tasksArray = await taskController.getStartedTask();
+    const tasksByUser = [];
+    startedTasks.choices = [];
+        tasksArray.forEach(task => {
+            if(task.createdBy === user.name) {
+                tasksByUser.push(task);
+                counter++;
+                let choiceTitle = `${counter}. ${task.title}`
+                startedTasks.choices.push(choiceTitle);
+            }
+        })
+    
+    startedTasks.choices.push('Back');
+    while (!exit) {
+        const menuOption = await inquirer.prompt([startedTasks]);
+        if(menuOption.menu === 'Back') {
+            exit = true;
+        } else {
+            console.log(tasksByUser[(menuOption.menu.charAt(0) - 1)]);
+        }
+    }
+}
+
+
+
+
+
+
+
+
 
 module.exports = initProgram

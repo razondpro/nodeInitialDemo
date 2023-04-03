@@ -9,6 +9,10 @@ class TaskList {
     append(task){
         this.tasks.push(task)
     }
+
+    getStartedTasks(){
+        return this.tasks.filter(task => task.status === 'started');
+    }
 }
 
 module.exports = TaskList
