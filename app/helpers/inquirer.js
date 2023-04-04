@@ -99,13 +99,14 @@ async function showStartedTasks(taskController, user) {
     let exit = false;
     const tasksArray = await taskController.getStartedTasks();
     const tasksByUser = getTasksByUser(tasksArray, user);
+    const choices = getTaskTitlesMenu(tasksByUser, 'Select a task to view more details:');
 
     while (!exit) {
         const menuOption = await inquirer.prompt([{
             type: 'list',
             name: 'menu',
             message: 'Select a task to view more details:',
-            choices: [getTaskTitlesMenu, 'Back']
+            choices: choices
         }]);
         if(menuOption.menu === 'Back') {
             exit = true;
@@ -114,13 +115,22 @@ async function showStartedTasks(taskController, user) {
         }
     }
 }
+}
 
 function getTasksByUser(tasksArray, user) {
     return tasksArray.filter(task => task.createdBy === user.name);
 }
 
-function getTaskTitlesMenu(tasks) {
-    return tasks.map((task, index) => `${index + 1}. ${task.title}`);
+function getTaskTitlesMenu(tasks, message) {
+    const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
+    choices.push('Back');
+    return [{
+        type: 'list',
+        name: 'menu',
+        message: message,
+        choices: choices
+    }];
+
 }
 
 
