@@ -122,21 +122,22 @@ async function showStartedTasks(taskController, user) {
   }
 }
 
+//Filter tasks by user:
 function getTasksByUser(tasksArray, user) {
   return tasksArray.filter((task) => task.createdBy === user.name);
 }
 
+//Get task titles menu:
 function getTaskTitlesMenu(tasks, message) {
   const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
   choices.push("Back");
-  return [
-    {
-      type: "list",
-      name: "menu",
-      message: message,
-      choices: choices,
-    },
-  ];
+  const menu = {
+    type: 'list',
+    name: 'menu',
+    message: message,
+    choices: choices
+};
+return menu;
 }
 
 module.exports = initProgram;
