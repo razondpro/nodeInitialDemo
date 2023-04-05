@@ -93,5 +93,26 @@ async function createNewTask(taskController, user) {
     }
 }
 
+async function showFinishedTasks(taskController, user) {
+    let exit = false;
+    const tasksArray = await taskController.getFinishedTasks();
+    const tasksByUser = getTasksByUser(tasksArray, user);
+    const choices = getTaskTitlesMenuChoices(tasksByUser, 'Select a task to view more details:');
+
+    while (!exit) {
+        const menuOption = await inquirer.prompt([{
+            type: 'list',
+            name: 'menu',
+            message: 'Select a task to view more details:',
+            choices: choices
+        }]);
+        if(menuOption.menu === 'Back') {
+            exit = true;
+        } else {
+            console.log(tasksByUser[(menuOption.menu.charAt(0) - 1)]);
+        }
+    }
+}
+
 
 module.exports = initProgram

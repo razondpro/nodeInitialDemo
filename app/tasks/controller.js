@@ -33,7 +33,10 @@ class TaskController {
 
     }
 
-
+    async getFinishedTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getFinishedTasks();
+    }
 
 }
 
