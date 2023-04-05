@@ -21,7 +21,7 @@ class TaskController {
     }
 
     async retrieveAll() {
-        const t = await this.service.retrtieveAll()
+        const t = await this.service.retrieveAll()
         return t;
     }
 
@@ -33,7 +33,12 @@ class TaskController {
 
     }
 
-
+// added method to show started tasks:
+async getStartedTask(){
+    const tasks = await this.service.retrieveAll();
+    return tasks;
+    return tasks.getStartedTasks();
+}
 
 }
 
