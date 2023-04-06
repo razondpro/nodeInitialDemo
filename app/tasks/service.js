@@ -21,7 +21,7 @@ class TaskSerivice{
      * Get all tasks from db
      * @returns all tasks
      */
-    async retrtieveAll(){
+    async retrieveAll(){
         let tasks = await this.repository.findAll()
         return tasks;
     }

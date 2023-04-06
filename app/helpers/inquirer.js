@@ -31,7 +31,8 @@ async function initProgram() {
  */
 async function listMainMenu(dbType) {
   const tc = new TaskController(TaskRepositoryFactory.create(dbType));
-  const user = await inquirer.prompt([askName]);
+  const answer = await inquirer.prompt([askName]);
+  const user = answer.name
 
   let exit = false;
   while (!exit) {
@@ -41,7 +42,7 @@ async function listMainMenu(dbType) {
         await createNewTask(tc, user);
         break;
       case "Show tasks":
-        await listTaskMenu();
+        await listTaskMenu(tc, user);
         break;
       case "Delete tasks":
         console.log("Delete tasks");
@@ -55,7 +56,7 @@ async function listMainMenu(dbType) {
   }
 }
 
-async function listTaskMenu() {
+async function listTaskMenu(taskController, user) {
   let exit = false;
   while (!exit) {
     const menuOption = await inquirer.prompt([taskMenu]);
@@ -91,6 +92,7 @@ async function createNewTask(taskController, user) {
         taskDetails.details,
         "pending",
         new Date().toISOString(),
+        null,
         null,
         null,
         user.name
@@ -129,15 +131,17 @@ function getTasksByUser(tasksArray, user) {
 
 //Get task titles menu:
 function getTaskTitlesMenu(tasks, message) {
-  const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
-  choices.push("Back");
-  const menu = {
-    type: 'list',
-    name: 'menu',
-    message: message,
-    choices: choices
-};
-return menu;
+    const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
+    choices.push("Back");
+    
+    const menu = {
+        type: 'list',
+        name: 'menu',
+        message: message,
+        choices: choices
+        };
+
+    return menu;
 }
 
 module.exports = initProgram;
