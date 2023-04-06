@@ -36,7 +36,7 @@ class JsonModel {
     async findOne(id){
         const index = await this.getIndex(id)
         let task
-        if(index)
+        if(index >= 0)
             task =  await json.getConnection().getData(`${this.tasksArray}[${index}]`)
         return task 
     }
@@ -59,7 +59,7 @@ class JsonModel {
      */
     async delete(id) {
         const index = await this.getIndex(id)
-        if(index)
+        if(index >= 0)
             await json.getConnection().delete(`${this.tasksArray}[${index}]`)    
     }
     /**
@@ -68,7 +68,7 @@ class JsonModel {
      */
     async update(task){
         const index = await this.getIndex(task.id)
-        if(index)
+        if(index >= 0)
             await this.saveInPosition(task, index)
 
     }

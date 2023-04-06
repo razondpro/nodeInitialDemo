@@ -1,5 +1,5 @@
 class Task {
-    constructor(id, title, details, status, createdAt, startedAt, finishedAt, deletedAt, createdBy) {
+    constructor(id, title, details, status, createdAt, startedAt, finishedAt, createdBy) {
         this.id = id
         this.title = title
         this.details = details
@@ -7,7 +7,6 @@ class Task {
         this.createdAt = createdAt
         this.startedAt = startedAt
         this.finishedAt = finishedAt
-        this.deletedAt = deletedAt
         this.createdBy = createdBy
     }
     /**
@@ -87,21 +86,6 @@ class Task {
     setFinishedAt(finishedAt){
         this.finishedAt = finishedAt
     }
-    /**
-     * Get delete date of task
-     * @returns deleted date of the task
-     */
-    getDeletedAt(){
-        return this.deletedAt
-    }
-    /**
-     * Set deleted date of the tassk
-     * @param {*} deletedAt 
-     */
-    setDeletedAt(deletedAt){
-        this.deletedAt = deletedAt
-    }
-
     /**
      * Get user name who created the task
      * @returns user name who created the task

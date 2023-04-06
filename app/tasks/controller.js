@@ -30,7 +30,7 @@ class TaskController {
     }
 
     async delete(id){
-
+        await this.service.delete(id)
     }
 
     // added method to show started tasks:

@@ -25,6 +25,13 @@ class TaskSerivice{
         let tasks = await this.repository.findAll()
         return tasks;
     }
+    /**
+     * Deletes a task by id
+     * @param {string} id 
+     */
+    async delete(id){
+        await this.repository.delete(id)
+    }
 }
 
 module.exports = TaskSerivice
