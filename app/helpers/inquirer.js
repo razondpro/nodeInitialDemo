@@ -66,10 +66,10 @@ async function listTaskMenu() {
                 //To-do
                 break;
             case 'Started':
-                //To-do
+                await showStartedTasks(taskController, user);   
                 break;
             case 'Finished':
-                //To-do
+                await showFinishedTasks(taskController, user);
                 break;
             case 'Back':
                 exit = true;
@@ -93,19 +93,33 @@ async function createNewTask(taskController, user) {
     }
 }
 
+//show all started tasks:
+
+async function showStartedTasks(taskController, user) {
+    let exit = false;
+    const tasksArray = await taskController.getStartedTasks();
+    const tasksByUser = getTasksByUser(tasksArray, user);
+    const menu = getTaskTitlesMenu(tasksByUser, "Select a task to view more details:");
+    
+    while (!exit) {
+    const menuOption = await inquirer.prompt([menu]);
+    if (menuOption.menu === "Back") {
+        exit = true;
+     } else {
+     console.log(tasksByUser[menuOption.menu.charAt(0) - 1]);
+     }
+    }
+}
+
+//show all finished tasks:
 async function showFinishedTasks(taskController, user) {
     let exit = false;
     const tasksArray = await taskController.getFinishedTasks();
     const tasksByUser = getTasksByUser(tasksArray, user);
-    const choices = getTaskTitlesMenuChoices(tasksByUser, 'Select a task to view more details:');
+    const menu = getTaskTitlesMenu(tasksByUser, 'Select a task to view more details:');
 
     while (!exit) {
-        const menuOption = await inquirer.prompt([{
-            type: 'list',
-            name: 'menu',
-            message: 'Select a task to view more details:',
-            choices: choices
-        }]);
+        const menuOption = await inquirer.prompt([menu]);
         if(menuOption.menu === 'Back') {
             exit = true;
         } else {
@@ -114,5 +128,22 @@ async function showFinishedTasks(taskController, user) {
     }
 }
 
+//Filter tasks by user:
+function getTasksByUser(tasksArray, user) {
+    return tasksArray.filter((task) => task.createdBy === user);
+}
+    
+//Get task titles menu:
+function getTaskTitlesMenu(tasks, message) {
+    const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
+    choices.push("Back");
+    const menu = {
+        type: 'list',
+        name: 'menu',
+        message: message,
+        choices: choices
+        };
+      return menu;
+    }
 
 module.exports = initProgram

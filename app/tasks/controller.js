@@ -21,7 +21,7 @@ class TaskController {
     }
 
     async retrieveAll() {
-        const t = await this.service.retrtieveAll()
+        const t = await this.service.retrieveAll()
         return t;
     }
 
@@ -31,6 +31,11 @@ class TaskController {
 
     async delete(id){
 
+    }
+
+    async getStartedTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getStartedTasks();
     }
 
     async getFinishedTasks(){
