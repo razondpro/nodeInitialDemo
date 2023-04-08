@@ -137,21 +137,26 @@ async function createNewTask(taskController, user) {
 //show all started tasks:
 async function showStartedTasks(taskController, user) {
   let exit = false;
-  const tasksArray = await taskController.getStartedTasks();
-  const tasksByUser = getTasksByUser(tasksArray, user);
+  let tasksArray = await taskController.getStartedTasks();
+  let tasksByUser = getTasksByUser(tasksArray, user);
   const menu = getTaskTitlesMenu(
     tasksByUser,
-    "Select a task to view more details:"
-  );
+    "Select a task to view more details or delete:"
+    );
 
-  while (!exit) {
-    const menuOption = await inquirer.prompt([menu]);
-    if (menuOption.menu === "Back") {
-      exit = true;
-    } else {
-      console.log(tasksByUser[menuOption.menu.charAt(0) - 1]);
+    while (!exit) {
+        const menuOption = await inquirer.prompt([menu]);
+        if (menuOption.menu === "Back") {
+            exit = true;
+        } else if (menuOption.menu === "Delete") {
+            await deleteTask(taskController, user);
+            tasksArray = await taskController.getStartedTasks();
+            tasksByUser = getTasksByUser(tasksArray, user);
+            menu.choices = getTaskTitlesMenu(tasksByUser, "Select a task to view more details or delete:").choices;
+        } else {
+            console.log(tasksByUser[menuOption.menu.charAt(0) - 1]);
+        }
     }
-  }
 }
 
 //Filter tasks by user:
@@ -163,6 +168,7 @@ function getTasksByUser(tasksArray, user) {
 function getTaskTitlesMenu(tasks, message) {
     const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
     choices.push("Back");
+    choices.push("Delete");
 
     const menu = {
         type: 'list',
