@@ -37,7 +37,7 @@ class TaskJsonRepository {
     }
 
     async delete(id){
-        
+        await this.model.delete(id)
     }
 
     async update(task){

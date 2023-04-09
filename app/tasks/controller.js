@@ -30,7 +30,7 @@ class TaskController {
     }
 
     async delete(id){
-
+        await this.service.delete(id)
     }
 
     async getPendingTasks(){
