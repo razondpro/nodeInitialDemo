@@ -11,7 +11,7 @@ const {
   askTitle,
   askDetails,
   confirmAction,
-  pendingTasks
+  pendingTasks,
 } = require("./questions");
 
 /**
@@ -33,7 +33,7 @@ async function initProgram() {
 async function listMainMenu(dbType) {
   const tc = new TaskController(TaskRepositoryFactory.create(dbType));
   const answer = await inquirer.prompt([askName]);
-  const user = answer.name
+  const user = answer.name;
 
   let exit = false;
   while (!exit) {
@@ -46,7 +46,7 @@ async function listMainMenu(dbType) {
         await listTaskMenu(tc, user);
         break;
       case "Delete tasks":
-        await deleteTask(tc, user)
+        await deleteTask(tc, user);
         break;
       case "Exit":
         exit = true;
@@ -58,33 +58,35 @@ async function listMainMenu(dbType) {
 }
 
 async function deleteTask(taskController, user) {
-  const tasksArray = await taskController.retrieveAll()
-    
-  if(tasksArray.getTasks().length){
-      const tasksByUser = getTasksByUser(tasksArray.getTasks(), user)
-      await showDeleteTasksMenu(taskController, tasksByUser)
-  }else{
-      console.log('There are no tasks to delete')
+  const tasksArray = await taskController.retrieveAll();
+
+  if (tasksArray.getTasks().length) {
+    const tasksByUser = getTasksByUser(tasksArray.getTasks(), user);
+    await showDeleteTasksMenu(taskController, tasksByUser);
+  } else {
+    console.log("There are no tasks to delete");
   }
 }
 
-async function showDeleteTasksMenu(taskController, tasksByUser){
-  let menu = getTaskTitlesMenu(tasksByUser, 'Select a task to delete:')
+async function showDeleteTasksMenu(taskController, tasksByUser) {
+  let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
   let exit = false;
 
   while (!exit) {
-      const menuOption = await inquirer.prompt([menu]);
-      if (menuOption.menu === "Back") {
-          exit = true;
-      } else {
-          const ca = await inquirer.prompt([confirmAction]);
-          if (ca.confirm) {
-              await taskController.delete((tasksByUser[menuOption.menu.charAt(0) - 1]).id)
-              tasksByUser.splice((menuOption.menu.charAt(0) - 1), 1)
-              menu = getTaskTitlesMenu(tasksByUser, 'Select a task to delete:')
-              console.log('Succesfully deleted')
-          }
+    const menuOption = await inquirer.prompt([menu]);
+    if (menuOption.menu === "Back") {
+      exit = true;
+    } else {
+      const ca = await inquirer.prompt([confirmAction]);
+      if (ca.confirm) {
+        await taskController.delete(
+          tasksByUser[menuOption.menu.charAt(0) - 1].id
+        );
+        tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
+        menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
+        console.log("Succesfully deleted");
       }
+    }
   }
 }
 
@@ -135,57 +137,43 @@ async function createNewTask(taskController, user) {
   }
 }
 
+//Show all pending tasks:
 async function showPendingTasks(taskController, user) {
-    let counter = 0;
-    let exit = false;
-    const tasksArray = await taskController.getPendingTasks();
-    const tasksByUser = [];
-    pendingTasks.choices = [];
-        tasksArray.forEach(task => {
-            if(task.createdBy === user.name) {
-            tasksByUser.push(task);
-            counter++;
-            let choiceTitle = `${counter}. ${task.title}`
-            pendingTasks.choices.push(choiceTitle);
-            }
-        })
-    
-    pendingTasks.choices.push('Back');
-    while (!exit) {
-        const menuOption = await inquirer.prompt([pendingTasks]);
-        if(menuOption.menu === 'Back') {
-            exit = true;
-        }else {
-        console.log(tasksByUser[(menuOption.menu.charAt(0) - 1)]);
-        }
+  let exit = false;
+  const tasksArray = await taskController.getPendingTasks();
+  const tasksByUser = getTasksByUser(tasksArray, user);
+  const menu = getTaskTitlesMenu(
+    tasksByUser,
+    "Select a task to view more details:"
+  );
+  while (!exit) {
+    const menuOption = await inquirer.prompt([menu]);
+    if (menuOption.menu === "Back") {
+      exit = true;
+    } else {
+      console.log(tasksByUser[menuOption.menu.charAt(0) - 1]);
     }
+  }
 }
 
-async function showPendingTasks(taskController, user) {
-    let counter = 0;
-    let exit = false;
-    const tasksArray = await taskController.getPendingTasks();
-    const tasksByUser = [];
-    pendingTasks.choices = [];
-        tasksArray.forEach(task => {
-            if(task.createdBy === user.name) {
-            tasksByUser.push(task);
-            counter++;
-            let choiceTitle = `${counter}. ${task.title}`
-            pendingTasks.choices.push(choiceTitle);
-            }
-        })
-    
-    pendingTasks.choices.push('Back');
-    while (!exit) {
-        const menuOption = await inquirer.prompt([pendingTasks]);
-        if(menuOption.menu === 'Back') {
-            exit = true;
-        }else {
-        console.log(tasksByUser[(menuOption.menu.charAt(0) - 1)]);
-        }
-    }
+//Filter tasks by user:
+function getTasksByUser(tasksArray, user) {
+  return tasksArray.filter((task) => task.createdBy === user);
 }
 
+//Get task titles menu:
+function getTaskTitlesMenu(tasks, message) {
+  const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
+  choices.push("Back");
 
-module.exports = initProgram
+  const menu = {
+    type: "list",
+    name: "menu",
+    message: message,
+    choices: choices,
+  };
+
+  return menu;
+}
+
+module.exports = initProgram;
