@@ -58,8 +58,8 @@ async function listMainMenu(dbType) {
 }
 /**
  * Gets list of tasks to delete
- * @param {*} taskController 
- * @param {*} user 
+ * @param {*} taskController
+ * @param {*} user
  */
 async function deleteTask(taskController, user) {
   const tasksArray = await taskController.retrieveAll();
@@ -73,8 +73,8 @@ async function deleteTask(taskController, user) {
 
 /**
  * Shows delete options menu, back return to main menu
- * @param {*} taskController 
- * @param {Array} tasksByUser 
+ * @param {*} taskController
+ * @param {Array} tasksByUser
  */
 async function showDeleteTasksMenu(taskController, tasksByUser) {
   let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
@@ -104,8 +104,8 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
 
 /**
  * Shows a menu listing task's different status, back returns to main menu
- * @param {*} taskController 
- * @param {*} user 
+ * @param {*} taskController
+ * @param {*} user
  */
 async function listTaskMenu(taskController, user) {
   let exit = false;
@@ -132,8 +132,8 @@ async function listTaskMenu(taskController, user) {
 
 /**
  * Creates a new task with a title and details set as pending by default
- * @param {*} taskController 
- * @param {*} user 
+ * @param {*} taskController
+ * @param {*} user
  */
 async function createNewTask(taskController, user) {
   const taskTitle = await inquirer.prompt([askTitle]);
@@ -161,8 +161,8 @@ async function createNewTask(taskController, user) {
 
 /**
  * Shows all pending tasks, back returns to task menu
- * @param {*} taskController 
- * @param {*} user 
+ * @param {*} taskController
+ * @param {*} user
  */
 async function showPendingTasks(taskController, user) {
   let exit = false;
@@ -179,44 +179,53 @@ async function showPendingTasks(taskController, user) {
         exit = true;
       } else {
         let taskChosen = tasksByUser[menuOption.menu.charAt(0) - 1];
-        await pendingTasksOptions(taskChosen, taskController, tasksArray);
+        await taskOptions(
+          taskChosen,
+          taskController,
+          tasksArray,
+          taskChosen.status
+        );
         exit = true;
       }
     }
-  }else{
+  } else {
     console.log("You have no pending tasks");
   }
 }
 
 /**
- * Shows options for selected task, back returns to pending tasks menu
- * @param {Object} taskChosen 
- * @param {*} taskController 
- * @param {Array} tasksArray 
+ * Shows options for selected task, back returns to list of selected status tasks menu
+ * @param {Object} taskChosen
+ * @param {*} taskController
+ * @param {Array} tasksArray
+ * @param {String} status
  */
-async function pendingTasksOptions(taskChosen, taskController, tasksArray) {
+async function taskOptions(taskChosen, taskController, tasksArray, status) {
   let exit = false;
+  let choiceStatus = `Set as ${status}`;
   while (!exit) {
     console.log(`Task chosen: ${taskChosen.title}`);
-    const menuOption = await inquirer.prompt([detailsMenu]);
+    const newMenu = detailsMenu;
+    for (let i = 0; i < newMenu.choices.length; i++) {
+      if (newMenu.choices[i] === choiceStatus) {
+        newMenu.choices.splice(i, 1);
+      }
+    }
+    const menuOption = await inquirer.prompt([newMenu]);
     switch (menuOption.menu) {
       case "View details":
         console.log(taskChosen); //Must clean up and improve (Laura)
         break;
-      case "Start task":
-        taskChosen.setStatus("started");
-        taskChosen.setStartedAt(new Date().toISOString());
-        await taskController.update(taskChosen);
-        console.log("Task started");
-        tasksArray.splice(tasksArray.indexOf(taskChosen), 1);
+      case "Set as pending":
+        await updateTask(taskController, taskChosen, "pending", tasksArray)
         exit = true;
         break;
-      case "Finish task":
-        taskChosen.setStatus("finished");
-        taskChosen.setFinishedAt(new Date().toISOString());
-        await taskController.update(taskChosen);
-        console.log("Task finished");
-        tasksArray.splice(tasksArray.indexOf(taskChosen), 1);
+      case "Set as started":
+        await updateTask(taskController, taskChosen, "started", tasksArray)
+        exit = true;
+        break;
+      case "Set as finished":
+        await updateTask(taskController, taskChosen, "finished", tasksArray)
         exit = true;
         break;
       case "Delete task":
@@ -232,9 +241,28 @@ async function pendingTasksOptions(taskChosen, taskController, tasksArray) {
 }
 
 /**
+ * Updates a task to the specified status
+ * @param {*} taskController 
+ * @param {Object} taskToUpdate 
+ * @param {String} status 
+ * @param {Array} taskList 
+ */
+async function updateTask(taskController, taskToUpdate, status, taskList) {
+  taskToUpdate.setStatus(status);
+  if(status === "started") {
+    taskToUpdate.setStartedAt(new Date().toISOString());
+  }else if (status === "finished") {
+    taskToUpdate.setFinishedAt(new Date().toISOString());
+  }
+  await taskController.update(taskToUpdate);
+  console.log(`Task set as ${status}`);
+  taskList.splice(taskList.indexOf(taskToUpdate), 1);
+}
+
+/**
  * Filter tasks by user
- * @param {Array} tasksArray 
- * @param {*} user 
+ * @param {Array} tasksArray
+ * @param {*} user
  * @returns {Array}
  */
 function getTasksByUser(tasksArray, user) {
@@ -243,8 +271,8 @@ function getTasksByUser(tasksArray, user) {
 
 /**
  * Get task titles menu
- * @param {Array} tasks 
- * @param {String} message 
+ * @param {Array} tasks
+ * @param {String} message
  * @returns {Object}
  */
 function getTaskTitlesMenu(tasks, message) {
