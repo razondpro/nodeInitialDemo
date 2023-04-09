@@ -56,20 +56,26 @@ async function listMainMenu(dbType) {
     }
   }
 }
-
-//Gets list of tasks to delete
+/**
+ * Gets list of tasks to delete
+ * @param {*} taskController 
+ * @param {*} user 
+ */
 async function deleteTask(taskController, user) {
   const tasksArray = await taskController.retrieveAll();
-
-  if (tasksArray.getTasks().length) {
-    const tasksByUser = getTasksByUser(tasksArray.getTasks(), user);
+  const tasksByUser = getTasksByUser(tasksArray.getTasks(), user);
+  if (tasksByUser.length != 0) {
     await showDeleteTasksMenu(taskController, tasksByUser);
   } else {
     console.log("There are no tasks to delete");
   }
 }
 
-//Shows delete options menu, back return to main menu
+/**
+ * Shows delete options menu, back return to main menu
+ * @param {*} taskController 
+ * @param {Array} tasksByUser 
+ */
 async function showDeleteTasksMenu(taskController, tasksByUser) {
   let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
   let exit = false;
@@ -87,11 +93,20 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
         tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
         menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
         console.log("Succesfully deleted");
+        if (tasksByUser.length === 0) {
+          console.log("There are no more tasks to delete");
+          exit = true;
+        }
       }
     }
   }
 }
-//Shows a menu listing task's different status, back returns to main menu
+
+/**
+ * Shows a menu listing task's different status, back returns to main menu
+ * @param {*} taskController 
+ * @param {*} user 
+ */
 async function listTaskMenu(taskController, user) {
   let exit = false;
   while (!exit) {
@@ -101,10 +116,10 @@ async function listTaskMenu(taskController, user) {
         await showPendingTasks(taskController, user);
         break;
       case "Started":
-        //To-do
+        //To-do in started branch
         break;
       case "Finished":
-        //To-do
+        //To-do in finished branch
         break;
       case "Back":
         exit = true;
@@ -115,7 +130,11 @@ async function listTaskMenu(taskController, user) {
   }
 }
 
-//Creates a new task with a title and details set as pending by default
+/**
+ * Creates a new task with a title and details set as pending by default
+ * @param {*} taskController 
+ * @param {*} user 
+ */
 async function createNewTask(taskController, user) {
   const taskTitle = await inquirer.prompt([askTitle]);
   const taskDetails = await inquirer.prompt([askDetails]);
@@ -140,28 +159,41 @@ async function createNewTask(taskController, user) {
   }
 }
 
-//Shows all pending tasks, back returns to task menu
+/**
+ * Shows all pending tasks, back returns to task menu
+ * @param {*} taskController 
+ * @param {*} user 
+ */
 async function showPendingTasks(taskController, user) {
   let exit = false;
   const tasksArray = await taskController.getPendingTasks();
   const tasksByUser = getTasksByUser(tasksArray, user);
-  const menu = getTaskTitlesMenu(
-    tasksByUser,
-    "Select a task to view more details:"
-  );
-  while (!exit) {
-    const menuOption = await inquirer.prompt([menu]);
-    if (menuOption.menu === "Back") {
-      exit = true;
-    } else {
-      let taskChosen = tasksByUser[menuOption.menu.charAt(0) - 1];
-      await pendingTasksOptions(taskChosen, taskController, tasksArray);
-      exit = true;
+  if (tasksByUser.length != 0) {
+    const menu = getTaskTitlesMenu(
+      tasksByUser,
+      "Select a task to view more details:"
+    );
+    while (!exit) {
+      const menuOption = await inquirer.prompt([menu]);
+      if (menuOption.menu === "Back") {
+        exit = true;
+      } else {
+        let taskChosen = tasksByUser[menuOption.menu.charAt(0) - 1];
+        await pendingTasksOptions(taskChosen, taskController, tasksArray);
+        exit = true;
+      }
     }
+  }else{
+    console.log("You have no pending tasks");
   }
 }
 
-//Shows options for selected task, back returns to pending tasks menu
+/**
+ * Shows options for selected task, back returns to pending tasks menu
+ * @param {Object} taskChosen 
+ * @param {*} taskController 
+ * @param {Array} tasksArray 
+ */
 async function pendingTasksOptions(taskChosen, taskController, tasksArray) {
   let exit = false;
   while (!exit) {
@@ -199,12 +231,22 @@ async function pendingTasksOptions(taskChosen, taskController, tasksArray) {
   }
 }
 
-//Filter tasks by user
+/**
+ * Filter tasks by user
+ * @param {Array} tasksArray 
+ * @param {*} user 
+ * @returns {Array}
+ */
 function getTasksByUser(tasksArray, user) {
   return tasksArray.filter((task) => task.createdBy === user);
 }
 
-//Get task titles menu
+/**
+ * Get task titles menu
+ * @param {Array} tasks 
+ * @param {String} message 
+ * @returns {Object}
+ */
 function getTaskTitlesMenu(tasks, message) {
   const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
   choices.push("Back");
