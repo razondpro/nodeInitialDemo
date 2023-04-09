@@ -202,13 +202,7 @@ async function showPendingTasks(taskController, user) {
  */
 async function taskOptions(taskChosen, taskController, tasksArray, status) {
   let exit = false;
-  let choiceStatus = `Set as ${status}`;
-  const newMenu = detailsMenu;
-  for (let i = 0; i < newMenu.choices.length; i++) {
-    if (newMenu.choices[i] === choiceStatus) {
-      newMenu.choices.splice(i, 1);
-    }
-  }
+  const newMenu = await createMenuFromStatus(status);
   while (!exit) {
     console.log(`Task chosen: ${taskChosen.title}`);
     const menuOption = await inquirer.prompt([newMenu]);
@@ -217,15 +211,15 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
         console.log(taskChosen); //Must clean up and improve (Laura)
         break;
       case "Set as pending":
-        await updateTask(taskController, taskChosen, "pending", tasksArray)
+        await updateTask(taskController, taskChosen, "pending", tasksArray);
         exit = true;
         break;
       case "Set as started":
-        await updateTask(taskController, taskChosen, "started", tasksArray)
+        await updateTask(taskController, taskChosen, "started", tasksArray);
         exit = true;
         break;
       case "Set as finished":
-        await updateTask(taskController, taskChosen, "finished", tasksArray)
+        await updateTask(taskController, taskChosen, "finished", tasksArray);
         exit = true;
         break;
       case "Delete task":
@@ -242,21 +236,37 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
 
 /**
  * Updates a task to the specified status
- * @param {*} taskController 
- * @param {Object} taskToUpdate 
- * @param {String} status 
- * @param {Array} taskList 
+ * @param {*} taskController
+ * @param {Object} taskToUpdate
+ * @param {String} status
+ * @param {Array} taskList
  */
 async function updateTask(taskController, taskToUpdate, status, taskList) {
   taskToUpdate.setStatus(status);
-  if(status === "started") {
+  if (status === "started") {
     taskToUpdate.setStartedAt(new Date().toISOString());
-  }else if (status === "finished") {
+  } else if (status === "finished") {
     taskToUpdate.setFinishedAt(new Date().toISOString());
   }
   await taskController.update(taskToUpdate);
   console.log(`Task set as ${status}`);
   taskList.splice(taskList.indexOf(taskToUpdate), 1);
+}
+
+/**
+ * Creates a new menu withouth the specified status
+ * @param {String} status 
+ * @returns {Object}
+ */
+async function createMenuFromStatus(status) {
+  let choiceStatus = `Set as ${status}`;
+  const newMenu = detailsMenu;
+  for (let i = 0; i < newMenu.choices.length; i++) {
+    if (newMenu.choices[i] === choiceStatus) {
+      newMenu.choices.splice(i, 1);
+    }
+  }
+  return newMenu;
 }
 
 /**
