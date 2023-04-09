@@ -1,10 +1,7 @@
-const colors = require("colors"); 
 const inquirer = require("inquirer");
 const TaskController = require("../tasks/controller");
 const TaskRepositoryFactory = require("../tasks/repositories/task.repository.factory");
 const Task = require("../tasks/task");
-
-colors.enable();
 
 const {
   dbSelection,
@@ -70,7 +67,7 @@ async function deleteTask(taskController, user) {
   if (tasksByUser.length != 0) {
     await showDeleteTasksMenu(taskController, tasksByUser);
   } else {
-    console.log(colors.green("There are no tasks to delete"));
+    console.log("There are no tasks to delete");
   }
 }
 
@@ -95,9 +92,9 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
         );
         tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
         menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
-        console.log(colors.green("Succesfully deleted"));
+        console.log("Succesfully deleted");
         if (tasksByUser.length === 0) {
-          console.log(colors.red("There are no more tasks to delete"));
+          console.log("There are no more tasks to delete");
           exit = true;
         }
       }
@@ -203,7 +200,7 @@ async function showPendingTasks(taskController, user) {
  * @param {Array} tasksArray
  * @param {String} status
  */
-async function taskOptions(taskChosen, taskController, user, tasksArray, status) {
+async function taskOptions(taskChosen, taskController, tasksArray, status) {
   let exit = false;
   const newMenu = await createMenuFromStatus(status);
   while (!exit) {
@@ -211,7 +208,8 @@ async function taskOptions(taskChosen, taskController, user, tasksArray, status)
     const menuOption = await inquirer.prompt([newMenu]);
     switch (menuOption.menu) {
       case "View details":
-        console.log(colors.yellow(taskChosen));
+        console.log(taskChosen); //Must clean up and improve (Laura)
+        break;
       case "Set as pending":
         await updateTask(taskController, taskChosen, "pending", tasksArray);
         exit = true;
@@ -225,9 +223,7 @@ async function taskOptions(taskChosen, taskController, user, tasksArray, status)
         exit = true;
         break;
       case "Delete task":
-        await deleteTask(taskController, user);
-        tasksArray = await taskController.getPendingTasks();
-        exit = true;
+        //To-do (Laura)
         break;
       case "Back":
         exit = true;
