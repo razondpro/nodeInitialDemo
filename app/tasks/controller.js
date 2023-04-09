@@ -26,7 +26,7 @@ class TaskController {
     }
 
     async update(task){
-
+        await this.service.update(task)
     }
 
     async delete(id){

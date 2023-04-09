@@ -8,10 +8,10 @@ const {
   askName,
   mainMenu,
   taskMenu,
+  detailsMenu,
   askTitle,
   askDetails,
   confirmAction,
-  pendingTasks,
 } = require("./questions");
 
 /**
@@ -57,6 +57,7 @@ async function listMainMenu(dbType) {
   }
 }
 
+//Gets list of tasks to delete
 async function deleteTask(taskController, user) {
   const tasksArray = await taskController.retrieveAll();
 
@@ -68,6 +69,7 @@ async function deleteTask(taskController, user) {
   }
 }
 
+//Shows delete options menu, back return to main menu
 async function showDeleteTasksMenu(taskController, tasksByUser) {
   let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
   let exit = false;
@@ -89,7 +91,7 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
     }
   }
 }
-
+//Shows a menu listing task's different status, back returns to main menu
 async function listTaskMenu(taskController, user) {
   let exit = false;
   while (!exit) {
@@ -113,6 +115,7 @@ async function listTaskMenu(taskController, user) {
   }
 }
 
+//Creates a new task with a title and details set as pending by default
 async function createNewTask(taskController, user) {
   const taskTitle = await inquirer.prompt([askTitle]);
   const taskDetails = await inquirer.prompt([askDetails]);
@@ -137,7 +140,7 @@ async function createNewTask(taskController, user) {
   }
 }
 
-//Show all pending tasks:
+//Shows all pending tasks, back returns to task menu
 async function showPendingTasks(taskController, user) {
   let exit = false;
   const tasksArray = await taskController.getPendingTasks();
@@ -151,17 +154,57 @@ async function showPendingTasks(taskController, user) {
     if (menuOption.menu === "Back") {
       exit = true;
     } else {
-      console.log(tasksByUser[menuOption.menu.charAt(0) - 1]);
+      let taskChosen = tasksByUser[menuOption.menu.charAt(0) - 1];
+      await pendingTasksOptions(taskChosen, taskController, tasksArray);
+      exit = true;
     }
   }
 }
 
-//Filter tasks by user:
+//Shows options for selected task, back returns to pending tasks menu
+async function pendingTasksOptions(taskChosen, taskController, tasksArray) {
+  let exit = false;
+  while (!exit) {
+    console.log(`Task chosen: ${taskChosen.title}`);
+    const menuOption = await inquirer.prompt([detailsMenu]);
+    switch (menuOption.menu) {
+      case "View details":
+        console.log(taskChosen); //Must clean up and improve (Laura)
+        break;
+      case "Start task":
+        taskChosen.setStatus("started");
+        taskChosen.setStartedAt(new Date().toISOString());
+        await taskController.update(taskChosen);
+        console.log("Task started");
+        tasksArray.splice(tasksArray.indexOf(taskChosen), 1);
+        exit = true;
+        break;
+      case "Finish task":
+        taskChosen.setStatus("finished");
+        taskChosen.setFinishedAt(new Date().toISOString());
+        await taskController.update(taskChosen);
+        console.log("Task finished");
+        tasksArray.splice(tasksArray.indexOf(taskChosen), 1);
+        exit = true;
+        break;
+      case "Delete task":
+        //To-do (Laura)
+        break;
+      case "Back":
+        exit = true;
+        break;
+      default:
+        console.log("What did you select?");
+    }
+  }
+}
+
+//Filter tasks by user
 function getTasksByUser(tasksArray, user) {
   return tasksArray.filter((task) => task.createdBy === user);
 }
 
-//Get task titles menu:
+//Get task titles menu
 function getTaskTitlesMenu(tasks, message) {
   const choices = tasks.map((task, index) => `${index + 1}. ${task.title}`);
   choices.push("Back");

@@ -33,12 +33,13 @@ const taskMenu = {
     loop: true
 }
 
-const pendingTasks = {
+const detailsMenu = {
     type: 'list',
     name: 'menu',
-    message: `(Pending tasks)
-    Select the task you want to view`,
+    message: `(Details menu)
+    What do you want to do with the current task?`,
     choices: [
+        'View details', 'Start task', 'Finish task', 'Delete task', 'Back'
     ],
     loop: true
 }
@@ -66,7 +67,7 @@ module.exports = {
     askName,
     mainMenu,
     taskMenu,
-    pendingTasks,
+    detailsMenu,
     askTitle,
     askDetails,
     confirmAction
