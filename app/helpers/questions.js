@@ -39,7 +39,6 @@ const detailsMenu = {
     message: `(Details menu)
     What do you want to do with the current task?`,
     choices: [
-        'View details', 'Set as pending', 'Set as started', 'Set as finished', 'Delete task', 'Back'
     ],
     loop: true
 }

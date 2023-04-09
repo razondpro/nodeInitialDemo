@@ -113,13 +113,13 @@ async function listTaskMenu(taskController, user) {
     const menuOption = await inquirer.prompt([taskMenu]);
     switch (menuOption.menu) {
       case "Pending":
-        await showPendingTasks(taskController, user);
+        await showTasksByStatus(taskController, user, "pending");
         break;
       case "Started":
-        //To-do in started branch
+        await showTasksByStatus(taskController, user, "started");
         break;
       case "Finished":
-        //To-do in finished branch
+        await showTasksByStatus(taskController, user, "finished");
         break;
       case "Back":
         exit = true;
@@ -160,13 +160,21 @@ async function createNewTask(taskController, user) {
 }
 
 /**
- * Shows all pending tasks, back returns to task menu
+ * Shows all tasks with specific status, back returns to task menu
  * @param {*} taskController
  * @param {*} user
+ * @param {String} status
  */
-async function showPendingTasks(taskController, user) {
+async function showTasksByStatus(taskController, user, status) {
   let exit = false;
-  const tasksArray = await taskController.getPendingTasks();
+  let tasksArray = [];
+  if (status === "pending") {
+    tasksArray = await taskController.getPendingTasks();
+  } else if (status === "started") {
+    tasksArray = await taskController.getStartedTasks();
+  } else if (status === "finished") {
+    tasksArray = await taskController.getFinishedTasks();
+  }
   const tasksByUser = getTasksByUser(tasksArray, user);
   if (tasksByUser.length != 0) {
     const menu = getTaskTitlesMenu(
@@ -189,7 +197,7 @@ async function showPendingTasks(taskController, user) {
       }
     }
   } else {
-    console.log("You have no pending tasks");
+    console.log(`You have no ${status} tasks`);
   }
 }
 
@@ -202,7 +210,7 @@ async function showPendingTasks(taskController, user) {
  */
 async function taskOptions(taskChosen, taskController, tasksArray, status) {
   let exit = false;
-  const newMenu = await createMenuFromStatus(status);
+  let newMenu = await createMenuFromStatus(status);
   while (!exit) {
     console.log(`Task chosen: ${taskChosen.title}`);
     const menuOption = await inquirer.prompt([newMenu]);
@@ -255,12 +263,13 @@ async function updateTask(taskController, taskToUpdate, status, taskList) {
 
 /**
  * Creates a new menu withouth the specified status
- * @param {String} status 
+ * @param {String} status
  * @returns {Object}
  */
 async function createMenuFromStatus(status) {
   let choiceStatus = `Set as ${status}`;
-  const newMenu = detailsMenu;
+  detailsMenu.choices = ['View details', 'Set as pending', 'Set as started', 'Set as finished', 'Delete task', 'Back'];
+  let newMenu = detailsMenu;
   for (let i = 0; i < newMenu.choices.length; i++) {
     if (newMenu.choices[i] === choiceStatus) {
       newMenu.choices.splice(i, 1);

@@ -38,6 +38,16 @@ class TaskController {
         return tasks.getPendingTasks();
     }
 
+    async getStartedTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getStartedTasks();
+    }
+
+    async getFinishedTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getFinishedTasks();
+    }
+
 
 
 }
