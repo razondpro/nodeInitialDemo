@@ -203,14 +203,14 @@ async function showPendingTasks(taskController, user) {
 async function taskOptions(taskChosen, taskController, tasksArray, status) {
   let exit = false;
   let choiceStatus = `Set as ${status}`;
+  const newMenu = detailsMenu;
+  for (let i = 0; i < newMenu.choices.length; i++) {
+    if (newMenu.choices[i] === choiceStatus) {
+      newMenu.choices.splice(i, 1);
+    }
+  }
   while (!exit) {
     console.log(`Task chosen: ${taskChosen.title}`);
-    const newMenu = detailsMenu;
-    for (let i = 0; i < newMenu.choices.length; i++) {
-      if (newMenu.choices[i] === choiceStatus) {
-        newMenu.choices.splice(i, 1);
-      }
-    }
     const menuOption = await inquirer.prompt([newMenu]);
     switch (menuOption.menu) {
       case "View details":
