@@ -1,7 +1,10 @@
+const colors = require("colors");
 const inquirer = require("inquirer");
 const TaskController = require("../tasks/controller");
 const TaskRepositoryFactory = require("../tasks/repositories/task.repository.factory");
 const Task = require("../tasks/task");
+
+colors.enable();
 
 const {
   dbSelection,
@@ -67,7 +70,7 @@ async function deleteTask(taskController, user) {
   if (tasksByUser.length != 0) {
     await showDeleteTasksMenu(taskController, tasksByUser);
   } else {
-    console.log("There are no tasks to delete");
+    console.log(colors.red("There are no tasks to delete"));
   }
 }
 
@@ -92,9 +95,9 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
         );
         tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
         menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
-        console.log("Succesfully deleted");
+        console.log(colors.green("Succesfully deleted"));
         if (tasksByUser.length === 0) {
-          console.log("There are no more tasks to delete");
+          console.log(colors.red("There are no more tasks to delete"));
           exit = true;
         }
       }
@@ -153,9 +156,9 @@ async function createNewTask(taskController, user) {
         user
       )
     );
-    console.log("Task created");
+    console.log(colors.green("Task created"));
   } else {
-    console.log("Cancelled task creation");
+    console.log(colors.red("Cancelled task creation"));
   }
 }
 
@@ -197,7 +200,7 @@ async function showTasksByStatus(taskController, user, status) {
       }
     }
   } else {
-    console.log(`You have no ${status} tasks`);
+    console.log(colors.red(`You have no ${status} tasks`));
   }
 }
 
@@ -216,7 +219,7 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
     const menuOption = await inquirer.prompt([newMenu]);
     switch (menuOption.menu) {
       case "View details":
-        console.log(taskChosen); //Must clean up and improve (Laura)
+        console.log(colors.yellow(taskChosen));
         break;
       case "Set as pending":
         await updateTask(taskController, taskChosen, "pending", tasksArray);
@@ -257,7 +260,7 @@ async function updateTask(taskController, taskToUpdate, status, taskList) {
     taskToUpdate.setFinishedAt(new Date().toISOString());
   }
   await taskController.update(taskToUpdate);
-  console.log(`Task set as ${status}`);
+  console.log(colors.green(`Task set as ${status}`));
   taskList.splice(taskList.indexOf(taskToUpdate), 1);
 }
 
