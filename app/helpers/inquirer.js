@@ -60,16 +60,16 @@ async function listMainMenu(dbType) {
  * Deletes specific task
  * @param {Object} taskToDelete
  * @param {*} taskController
+ * @param {Array} taskList
  */
-async function deleteTask(taskToDelete, taskController) {
+async function deleteTask(taskToDelete, taskController, taskList) {
   const ca = await inquirer.prompt([confirmAction]);
   if (ca.confirm) {
     await taskController.delete(taskToDelete.id);
+    taskList.splice(taskList.charAt(0) - 1, 1);
     console.log("Succesfully deleted");
-    return true;
-  } else {
-    return false;
   }
+  return taskList;
 }
 
 /**
@@ -90,10 +90,11 @@ async function deleteTasksMenu(taskController, user) {
         exit = true;
       } else {
         let taskToDelete = tasksByUser[menuOption.menu.charAt(0) - 1];
-        let deleted = await deleteTask(taskToDelete, taskController);
-        if (deleted) {
-          tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
-        }
+        tasksByUser = await deleteTask(
+          taskToDelete,
+          taskController,
+          tasksByUser
+        );
         if (tasksByUser.length === 0) {
           console.log("There are no more tasks to delete");
           exit = true;
@@ -171,12 +172,16 @@ async function createNewTask(taskController, user) {
 async function showTasksByStatus(taskController, user, status) {
   let exit = false;
   let tasksArray = [];
-  if (status === "pending") {
-    tasksArray = await taskController.getPendingTasks();
-  } else if (status === "started") {
-    tasksArray = await taskController.getStartedTasks();
-  } else if (status === "finished") {
-    tasksArray = await taskController.getFinishedTasks();
+  switch (status) {
+    case "pending":
+      tasksArray = await taskController.getPendingTasks();
+      break;
+    case "started":
+      tasksArray = await taskController.getStartedTasks();
+      break;
+    case "finished":
+      tasksArray = await taskController.getFinishedTasks();
+      break;
   }
   const tasksByUser = getTasksByUser(tasksArray, user);
   if (tasksByUser.length != 0) {
@@ -234,10 +239,7 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
         exit = true;
         break;
       case "Delete task":
-        let deleted = await deleteTask(taskChosen, taskController);
-        if(deleted){
-          tasksArray.splice(tasksArray.indexOf(taskChosen), 1);
-        }
+        tasksArray = await deleteTask(taskChosen, taskController, tasksArray);
         exit = true;
         break;
       case "Back":
