@@ -62,11 +62,11 @@ async function listMainMenu(dbType) {
  * @param {*} taskController
  * @param {Array} taskList
  */
-async function deleteTask(taskToDelete, taskController, taskList) {
+async function deleteTask(taskToDelete, positionInArray, taskController, taskList) {
   const ca = await inquirer.prompt([confirmAction]);
   if (ca.confirm) {
     await taskController.delete(taskToDelete.id);
-    taskList.splice(taskList.charAt(0) - 1, 1);
+    taskList.splice(positionInArray, 1);
     console.log("Succesfully deleted");
   }
   return taskList;
@@ -80,7 +80,7 @@ async function deleteTask(taskToDelete, taskController, taskList) {
 async function deleteTasksMenu(taskController, user) {
   let tasksArray = [];
   tasksArray = await taskController.retrieveAll();
-  const tasksByUser = getTasksByUser(tasksArray, user);
+  let tasksByUser = getTasksByUser(tasksArray, user);
   if (tasksByUser.length != 0) {
     let exit = false;
     while (!exit) {
@@ -89,11 +89,13 @@ async function deleteTasksMenu(taskController, user) {
       if (menuOption.menu === "Back") {
         exit = true;
       } else {
-        let taskToDelete = tasksByUser[menuOption.menu.charAt(0) - 1];
+        const position = menuOption.menu.charAt(0) - 1;
+        const taskToDelete = tasksByUser[position];
         tasksByUser = await deleteTask(
           taskToDelete,
+          position,
           taskController,
-          tasksByUser
+          [...tasksByUser]
         );
         if (tasksByUser.length === 0) {
           console.log("There are no more tasks to delete");
@@ -186,18 +188,20 @@ async function showTasksByStatus(taskController, user, arrayByStatus) {
       if (menuOption.menu === "Back") {
         exit = true;
       } else {
-        let taskChosen = tasksByUser[menuOption.menu.charAt(0) - 1];
+        const position = menuOption.menu.charAt(0) - 1
+        let taskChosen = tasksByUser[position];
         await taskOptions(
           taskChosen,
+          position,
           taskController,
-          tasksArray,
+          arrayByStatus,
           taskChosen.status
         );
         exit = true;
       }
     }
   } else {
-    console.log(`You have no ${status} tasks`);
+    console.log(`You have no tasks`);
   }
 }
 
@@ -208,7 +212,7 @@ async function showTasksByStatus(taskController, user, arrayByStatus) {
  * @param {Array} tasksArray
  * @param {String} status
  */
-async function taskOptions(taskChosen, taskController, tasksArray, status) {
+async function taskOptions(taskChosen, position, taskController, tasksArray, status) {
   let exit = false;
   let newMenu = await createMenuFromStatus(status);
   while (!exit) {
@@ -231,7 +235,7 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
         exit = true;
         break;
       case "Delete task":
-        tasksArray = await deleteTask(taskChosen, taskController, tasksArray);
+        tasksArray = await deleteTask(taskChosen, position, taskController, [...tasksArray]);
         exit = true;
         break;
       case "Back":
