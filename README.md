@@ -26,6 +26,7 @@ _Once all the necessary images and containers are installed and running up:_
 ```
 docker exec -it node-container sh
 npm install (the first time)
+npm install colors
 npm start
 ```
 
