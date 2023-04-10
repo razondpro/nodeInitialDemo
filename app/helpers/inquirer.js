@@ -113,17 +113,21 @@ async function deleteTasksMenu(taskController, user) {
  */
 async function listTaskMenu(taskController, user) {
   let exit = false;
+  let tasksArray = [];
   while (!exit) {
     const menuOption = await inquirer.prompt([taskMenu]);
     switch (menuOption.menu) {
       case "Pending":
-        await showTasksByStatus(taskController, user, "pending");
+        tasksArray = await taskController.getPendingTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Started":
-        await showTasksByStatus(taskController, user, "started");
+        tasksArray = await taskController.getStartedTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Finished":
-        await showTasksByStatus(taskController, user, "finished");
+        tasksArray = await taskController.getFinishedTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Back":
         exit = true;
@@ -169,21 +173,9 @@ async function createNewTask(taskController, user) {
  * @param {*} user
  * @param {String} status
  */
-async function showTasksByStatus(taskController, user, status) {
+async function showTasksByStatus(taskController, user, arrayByStatus) {
   let exit = false;
-  let tasksArray = [];
-  switch (status) {
-    case "pending":
-      tasksArray = await taskController.getPendingTasks();
-      break;
-    case "started":
-      tasksArray = await taskController.getStartedTasks();
-      break;
-    case "finished":
-      tasksArray = await taskController.getFinishedTasks();
-      break;
-  }
-  const tasksByUser = getTasksByUser(tasksArray, user);
+  const tasksByUser = getTasksByUser(arrayByStatus, user);
   if (tasksByUser.length != 0) {
     const menu = getTaskTitlesMenu(
       tasksByUser,
