@@ -22,7 +22,7 @@ class TaskController {
 
     async retrieveAll() {
         const t = await this.service.retrieveAll()
-        return t;
+        return t.getTasks();
     }
 
     async update(task){

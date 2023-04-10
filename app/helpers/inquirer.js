@@ -46,7 +46,7 @@ async function listMainMenu(dbType) {
         await listTaskMenu(tc, user);
         break;
       case "Delete tasks":
-        await deleteTask(tc, user);
+        await deleteTasksMenu(tc, user);
         break;
       case "Exit":
         exit = true;
@@ -57,48 +57,52 @@ async function listMainMenu(dbType) {
   }
 }
 /**
- * Gets list of tasks to delete
+ * Deletes specific task
+ * @param {Object} taskToDelete
  * @param {*} taskController
- * @param {*} user
+ * @param {Array} taskList
  */
-async function deleteTask(taskController, user) {
-  const tasksArray = await taskController.retrieveAll();
-  const tasksByUser = getTasksByUser(tasksArray.getTasks(), user);
-  if (tasksByUser.length != 0) {
-    await showDeleteTasksMenu(taskController, tasksByUser);
-  } else {
-    console.log("There are no tasks to delete");
+async function deleteTask(taskToDelete, taskController, taskList) {
+  const ca = await inquirer.prompt([confirmAction]);
+  if (ca.confirm) {
+    await taskController.delete(taskToDelete.id);
+    taskList.splice(taskList.charAt(0) - 1, 1);
+    console.log("Succesfully deleted");
   }
+  return taskList;
 }
 
 /**
  * Shows delete options menu, back return to main menu
  * @param {*} taskController
- * @param {Array} tasksByUser
+ * @param {*} user
  */
-async function showDeleteTasksMenu(taskController, tasksByUser) {
-  let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
-  let exit = false;
-
-  while (!exit) {
-    const menuOption = await inquirer.prompt([menu]);
-    if (menuOption.menu === "Back") {
-      exit = true;
-    } else {
-      const ca = await inquirer.prompt([confirmAction]);
-      if (ca.confirm) {
-        await taskController.delete(
-          tasksByUser[menuOption.menu.charAt(0) - 1].id
+async function deleteTasksMenu(taskController, user) {
+  let tasksArray = [];
+  tasksArray = await taskController.retrieveAll();
+  const tasksByUser = getTasksByUser(tasksArray, user);
+  if (tasksByUser.length != 0) {
+    let exit = false;
+    while (!exit) {
+      let menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
+      const menuOption = await inquirer.prompt([menu]);
+      if (menuOption.menu === "Back") {
+        exit = true;
+      } else {
+        let taskToDelete = tasksByUser[menuOption.menu.charAt(0) - 1];
+        tasksByUser = await deleteTask(
+          taskToDelete,
+          taskController,
+          tasksByUser
         );
-        tasksByUser.splice(menuOption.menu.charAt(0) - 1, 1);
-        menu = getTaskTitlesMenu(tasksByUser, "Select a task to delete:");
-        console.log("Succesfully deleted");
         if (tasksByUser.length === 0) {
           console.log("There are no more tasks to delete");
           exit = true;
         }
       }
     }
+  } else {
+    console.log("There are no tasks to delete");
   }
 }
 
@@ -109,17 +113,21 @@ async function showDeleteTasksMenu(taskController, tasksByUser) {
  */
 async function listTaskMenu(taskController, user) {
   let exit = false;
+  let tasksArray = [];
   while (!exit) {
     const menuOption = await inquirer.prompt([taskMenu]);
     switch (menuOption.menu) {
       case "Pending":
-        await showTasksByStatus(taskController, user, "pending");
+        tasksArray = await taskController.getPendingTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Started":
-        await showTasksByStatus(taskController, user, "started");
+        tasksArray = await taskController.getStartedTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Finished":
-        await showTasksByStatus(taskController, user, "finished");
+        tasksArray = await taskController.getFinishedTasks();
+        await showTasksByStatus(taskController, user, tasksArray);
         break;
       case "Back":
         exit = true;
@@ -165,17 +173,9 @@ async function createNewTask(taskController, user) {
  * @param {*} user
  * @param {String} status
  */
-async function showTasksByStatus(taskController, user, status) {
+async function showTasksByStatus(taskController, user, arrayByStatus) {
   let exit = false;
-  let tasksArray = [];
-  if (status === "pending") {
-    tasksArray = await taskController.getPendingTasks();
-  } else if (status === "started") {
-    tasksArray = await taskController.getStartedTasks();
-  } else if (status === "finished") {
-    tasksArray = await taskController.getFinishedTasks();
-  }
-  const tasksByUser = getTasksByUser(tasksArray, user);
+  const tasksByUser = getTasksByUser(arrayByStatus, user);
   if (tasksByUser.length != 0) {
     const menu = getTaskTitlesMenu(
       tasksByUser,
@@ -231,7 +231,8 @@ async function taskOptions(taskChosen, taskController, tasksArray, status) {
         exit = true;
         break;
       case "Delete task":
-        //To-do (Laura)
+        tasksArray = await deleteTask(taskChosen, taskController, tasksArray);
+        exit = true;
         break;
       case "Back":
         exit = true;
@@ -268,7 +269,14 @@ async function updateTask(taskController, taskToUpdate, status, taskList) {
  */
 async function createMenuFromStatus(status) {
   let choiceStatus = `Set as ${status}`;
-  detailsMenu.choices = ['View details', 'Set as pending', 'Set as started', 'Set as finished', 'Delete task', 'Back'];
+  detailsMenu.choices = [
+    "View details",
+    "Set as pending",
+    "Set as started",
+    "Set as finished",
+    "Delete task",
+    "Back",
+  ];
   let newMenu = detailsMenu;
   for (let i = 0; i < newMenu.choices.length; i++) {
     if (newMenu.choices[i] === choiceStatus) {
