@@ -33,6 +33,16 @@ const taskMenu = {
     loop: true
 }
 
+const detailsMenu = {
+    type: 'list',
+    name: 'menu',
+    message: `(Details menu)
+    What do you want to do with the current task?`,
+    choices: [
+    ],
+    loop: true
+}
+
 const askTitle = {
     type: 'input',
     name: 'title',
@@ -56,6 +66,7 @@ module.exports = {
     askName,
     mainMenu,
     taskMenu,
+    detailsMenu,
     askTitle,
     askDetails,
     confirmAction

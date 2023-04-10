@@ -26,18 +26,29 @@ class TaskController {
     }
 
     async update(task){
-
+        await this.service.update(task)
     }
 
     async delete(id){
         await this.service.delete(id)
     }
 
-    // added method to show started tasks:
+    async getPendingTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getPendingTasks();
+    }
+
     async getStartedTasks(){
         const tasks = await this.service.retrieveAll();
         return tasks.getStartedTasks();
     }
+
+    async getFinishedTasks(){
+        const tasks = await this.service.retrieveAll();
+        return tasks.getFinishedTasks();
+    }
+
+
 
 }
 

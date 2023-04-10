@@ -10,8 +10,16 @@ class TaskList {
         this.tasks.push(task)
     }
 
+    getPendingTasks(){
+        return this.tasks.filter(task => task.status === 'pending');
+    }
+
     getStartedTasks(){
         return this.tasks.filter(task => task.status === 'started');
+    }
+
+    getFinishedTasks(){
+        return this.tasks.filter(task => task.status === 'finished');
     }
 }
 

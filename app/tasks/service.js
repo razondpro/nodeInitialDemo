@@ -17,6 +17,10 @@ class TaskSerivice{
         let t = await this.repository.create(task)
         return t
     }
+
+    async update(task){
+        await this.repository.update(task)
+    }
     /**
      * Get all tasks from db
      * @returns all tasks
