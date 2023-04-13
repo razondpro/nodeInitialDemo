@@ -1,7 +1,9 @@
 const inquirer = require("inquirer");
-const TaskController = require("../tasks/controller");
-const TaskRepositoryFactory = require("../tasks/repositories/task.repository.factory");
-const Task = require("../tasks/task");
+var Colors = require('colors/safe');
+const db = require('./config/db')
+const TaskController = require("./tasks/controller");
+const TaskRepositoryFactory = require("./tasks/repositories/task.repository.factory");
+const Task = require("./tasks/task");
 
 const {
   dbSelection,
@@ -12,7 +14,9 @@ const {
   askTitle,
   askDetails,
   confirmAction,
-} = require("./questions");
+} = require("./helpers/questions");
+
+initProgram()
 
 /**
  * Initialization of main program
@@ -52,7 +56,7 @@ async function listMainMenu(dbType) {
         exit = true;
         break;
       default:
-        console.log("What did you select?");
+        console.log(Colors.red("What did you select?"));
     }
   }
 }
@@ -67,7 +71,7 @@ async function deleteTask(taskToDelete, positionInArray, taskController, taskLis
   if (ca.confirm) {
     await taskController.delete(taskToDelete.id);
     taskList.splice(positionInArray, 1);
-    console.log("Succesfully deleted");
+    console.log(Colors.green("Succesfully deleted"));
   }
   return taskList;
 }
@@ -98,13 +102,13 @@ async function deleteTasksMenu(taskController, user) {
           [...tasksByUser]
         );
         if (tasksByUser.length === 0) {
-          console.log("There are no more tasks to delete");
+          console.log(Colors.red("There are no more tasks to delete"));
           exit = true;
         }
       }
     }
   } else {
-    console.log("There are no tasks to delete");
+    console.log(Colors.red("There are no tasks to delete"));
   }
 }
 
@@ -135,7 +139,7 @@ async function listTaskMenu(taskController, user) {
         exit = true;
         break;
       default:
-        console.log("What did you select?");
+        console.log(Colors.red("What did you select?"));
     }
   }
 }
@@ -163,9 +167,9 @@ async function createNewTask(taskController, user) {
         user
       )
     );
-    console.log("Task created");
+    console.log(Colors.green("Task created"));
   } else {
-    console.log("Cancelled task creation");
+    console.log(Colors.red("Cancelled task creation"));
   }
 }
 
@@ -201,7 +205,7 @@ async function showTasksByStatus(taskController, user, arrayByStatus) {
       }
     }
   } else {
-    console.log(`You have no tasks`);
+    console.log(Colors.red(`You have no tasks`));
   }
 }
 
@@ -216,7 +220,7 @@ async function taskOptions(taskChosen, position, taskController, tasksArray, sta
   let exit = false;
   let newMenu = await createMenuFromStatus(status);
   while (!exit) {
-    console.log(`Task chosen: ${taskChosen.title}`);
+    console.log(Colors.brightGreen(`Task chosen: ${taskChosen.title}`));
     const menuOption = await inquirer.prompt([newMenu]);
     switch (menuOption.menu) {
       case "View details":
@@ -242,7 +246,7 @@ async function taskOptions(taskChosen, position, taskController, tasksArray, sta
         exit = true;
         break;
       default:
-        console.log("What did you select?");
+        console.log(Colors.red("What did you select?"));
     }
   }
 }
@@ -262,7 +266,7 @@ async function updateTask(taskController, taskToUpdate, status, taskList) {
     taskToUpdate.setFinishedAt(new Date(Date.now()).toISOString());
   }
   await taskController.update(taskToUpdate);
-  console.log(`Task set as ${status}`);
+  console.log(Colors.green(`Task set as ${status}`));
   taskList.splice(taskList.indexOf(taskToUpdate), 1);
 }
 
@@ -319,5 +323,3 @@ function getTaskTitlesMenu(tasks, message) {
 
   return menu;
 }
-
-module.exports = initProgram;
