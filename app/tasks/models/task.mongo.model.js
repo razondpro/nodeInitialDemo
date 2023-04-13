@@ -1,8 +1,14 @@
 const mongoose = require('mongoose')
-// const { mongo } = require('../../config/config')
 
 const taskSchema = mongoose.Schema({
-    name: String,
+    id: String,
+    title: String,
+    details: String,
+    status: String,
+    createdAt: Date,
+    startedAt: Date,
+    finishedAt: Date,
+    createdBy: String
 })
 
 const Task = mongoose.model('User', taskSchema)
