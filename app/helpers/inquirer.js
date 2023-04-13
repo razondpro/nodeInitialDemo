@@ -157,7 +157,7 @@ async function createNewTask(taskController, user) {
         taskTitle.title,
         taskDetails.details,
         "pending",
-        new Date().toISOString(),
+        new Date(Date.now()).toISOString(),
         null,
         null,
         user
@@ -257,9 +257,9 @@ async function taskOptions(taskChosen, position, taskController, tasksArray, sta
 async function updateTask(taskController, taskToUpdate, status, taskList) {
   taskToUpdate.setStatus(status);
   if (status === "started") {
-    taskToUpdate.setStartedAt(new Date().toISOString());
+    taskToUpdate.setStartedAt(new Date(Date.now()).toISOString());
   } else if (status === "finished") {
-    taskToUpdate.setFinishedAt(new Date().toISOString());
+    taskToUpdate.setFinishedAt(new Date(Date.now()).toISOString());
   }
   await taskController.update(taskToUpdate);
   console.log(`Task set as ${status}`);

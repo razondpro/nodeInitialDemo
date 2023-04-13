@@ -1,4 +1,5 @@
 const TaskJsonRepository = require("./task.json.repository")
+const TaskMysqlRepository = require('./task.mysql.repository')
 
 
 class TaskRepositoryFactory {
@@ -6,6 +7,7 @@ class TaskRepositoryFactory {
         let rep
         switch (type){
             case 'mysql':
+                rep = new TaskMysqlRepository()
                 break
             case 'mongo':
                 break
