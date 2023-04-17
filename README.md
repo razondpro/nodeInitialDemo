@@ -51,7 +51,7 @@ docker compose down
 ## Authors ✒️
 * [Razon](https://github.com/razondpro) - *Project management, structure, docker, data modelling and bug fixes.*
 * [Laura](https://github.com/) - *.*
-* [Pau](https://github.com/) - *.*
+* [Pau](https://github.com/paudelagisi) - *Code development, problem solver, *
 
 ## License 📄
 _This project is licensed under the MIT License - see the file [LICENSE](https://github.com) for details._
