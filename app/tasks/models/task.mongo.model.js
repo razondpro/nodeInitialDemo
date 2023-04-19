@@ -11,6 +11,6 @@ const taskSchema = mongoose.Schema({
     createdBy: String
 })
 
-const Task = mongoose.model('User', taskSchema)
+const Task = mongoose.model('Task', taskSchema)
 
 module.exports = Task
