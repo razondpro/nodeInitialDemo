@@ -50,7 +50,7 @@ docker compose down
 
 ## Authors ✒️
 * [Razon](https://github.com/razondpro) - *Project management, structure, docker, data modelling and bug fixes.*
-* [Laura](https://github.com/) - *.*
+* [Laura](https://github.com/LauraGutierrezSa) - *Code development.*
 * [Pau](https://github.com/paudelagisi) - *Code development, problem solver, *
 
 ## License 📄
